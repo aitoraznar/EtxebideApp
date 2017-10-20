@@ -1,64 +1,92 @@
 import React from "react";
-import { connect } from "react-redux";
-import { FlatList } from "react-native";
-import { List, ListItem, Text, View, Container, Header, Title, Button, Left, Right, Body, Icon } from "native-base";
+import {connect} from "react-redux";
+import {FlatList, ActivityIndicator} from "react-native";
+import {List, ListItem, Text, View, Container, Header, Title, Button, Left, Right, Body, Icon} from "native-base";
+let xml2js = require('react-native-xml2js');
+
 // import Icon from 'react-native-vector-icons/Ionicons'
 
-const dataObjects = [
-  { title: "First Title", description: "First Description" },
-  { title: "Second Title", description: "Second Description" },
-  { title: "Third Title", description: "Third Description" },
-  { title: "Fourth Title", description: "Fourth Description" },
-  { title: "Fifth Title", description: "Fifth Description" },
-  { title: "Sixth Title", description: "Sixth Description" },
-  { title: "Seventh Title", description: "Seventh Description" },
-  { title: "Eighth Title", description: "Eighth Description" },
-  { title: "Ninth Title", description: "Ninth Description" },
-  { title: "Tenth Title", description: "Tenth Description" },
-  { title: "Eleventh Title", description: "Eleventh Description" },
-  { title: "12th Title", description: "12th Description" },
-  { title: "13th Title", description: "13th Description" },
-  { title: "14th Title", description: "14th Description" },
-  { title: "15th Title", description: "15th Description" },
-  { title: "16th Title", description: "16th Description" },
-  { title: "17th Title", description: "17th Description" },
-  { title: "18th Title", description: "18th Description" },
-  { title: "19th Title", description: "19th Description" },
-  { title: "20th Title", description: "20th Description" },
-  { title: "BLACKJACK!", description: "BLACKJACK! Description" },
-];
 class ListviewExample extends React.Component {
-  _renderItem = ({ item }) => {
-    return (
-      <ListItem style={{ justifyContent: "space-between" }}>
-        <Text>{item.title}</Text>
-        <Text note>{item.description}</Text>
-      </ListItem>
-    );
-  };
-  render() {
-    return (
-      <Container>
-        <Header>
-          <Left>
-            <Button transparent onPress={() => this.props.navigation.navigate("DrawerOpen")}>
-              <Icon name="ios-menu" />
-            </Button>
-          </Left>
-          <Body style={{ flex: 3 }}>
-            <Title>List Example</Title>
-          </Body>
-          <Right />
-        </Header>
-        <FlatList data={dataObjects} keyExtractor={item => item.title} renderItem={this._renderItem} />
-      </Container>
-    );
-  }
+    constructor(props) {
+        super(props);
+        this.state = {
+            isLoading: true,
+            dataSource: []
+        }
+    }
+
+    componentDidMount() {
+        let rssUrl = 'http://www.etxebide.euskadi.eus/r01htSearchResultWAR/r01hPresentationRSS.jsp?r01kLang=es&r01kQry=tC%3Aeuskadi%3BtF%3Aprensa_comunicacion%3BtT%3Anota_prensa%2Cnoticia%3Bm%3AdocumentLanguage.EQ.es%3Bo%3AcommDate.DESC%3BcA%3Ar01epd012baeed6ad51ec320e2a01d3c6a22dbde7%3Bp%3AInter%3Bpp%3Ar01NavBarBlockSize.10%2Cr01PageSize.5&r01kPageContents=/x39-contgen/es/&r01kRssTitle=&r01kRss=1&page={{page}}';
+        let page = 1;
+
+        rssUrl = rssUrl.replace('{{page}}', page);
+
+        return fetch(rssUrl,
+            {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/rss+xml',
+                    'Content-Type': 'application/rss+xml',
+                },
+                mode: 'no-cors'
+            })
+            .then(response => response.text())
+            .then((response) => {
+                xml2js.parseString(response, function (err, result) {
+                    this.setState({
+                        isLoading: false,
+                        dataSource: result.rss.channel
+                    }, function () {
+                        // State set ready
+                        // do something with new state
+                    });
+                }.bind(this));
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
+
+    _renderItem = ({item}) => {
+        return (
+            <ListItem style={{justifyContent: "space-between"}}>
+                <Text>{item.title}</Text>
+                <Text note>{item.pubDate}</Text>
+            </ListItem>
+        );
+    };
+
+    render() {
+        if (this.state.isLoading) {
+            return (
+                <View style={{flex: 1, paddingTop: 200}}>
+                    <ActivityIndicator />
+                </View>
+            );
+        }
+
+        return (
+            <Container>
+                <Header>
+                    <Left>
+                        <Button transparent onPress={() => this.props.navigation.navigate("DrawerOpen")}>
+                            <Icon name="ios-menu"/>
+                        </Button>
+                    </Left>
+                    <Body style={{flex: 3}}>
+                    <Title>Noticias</Title>
+                    </Body>
+                    <Right />
+                </Header>
+                <FlatList data={this.state.dataSource} keyExtractor={item => item.title} renderItem={this._renderItem}/>
+            </Container>
+        );
+    }
 }
 const mapStateToProps = state => {
-  return {
-    // ...redux state to props here
-  };
+    return {
+        // ...redux state to props here
+    };
 };
 
 export default connect(mapStateToProps)(ListviewExample);
