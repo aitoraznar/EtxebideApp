@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import AlertMessage from '../Components/AlertMessage'
 
 // Styles
-import styles from './Styles/ListviewExampleStyles'
+import styles from './Styles/NewsStyles'
 
 class ListviewSectionsExample extends React.Component {
 

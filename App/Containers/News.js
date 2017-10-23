@@ -6,7 +6,7 @@ let xml2js = require('react-native-xml2js');
 
 // import Icon from 'react-native-vector-icons/Ionicons'
 
-class ListviewExample extends React.Component {
+class News extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -26,7 +26,7 @@ class ListviewExample extends React.Component {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/rss+xml',
-                    'Content-Type': 'application/rss+xml',
+                    'Content-Type': 'application/rss+xml;iso-8859-1;iso-8859-1'
                 },
                 mode: 'no-cors'
             })
@@ -35,7 +35,7 @@ class ListviewExample extends React.Component {
                 xml2js.parseString(response, function (err, result) {
                     this.setState({
                         isLoading: false,
-                        dataSource: result.rss.channel
+                        dataSource: result.rss.channel[0].item
                     }, function () {
                         // State set ready
                         // do something with new state
@@ -47,9 +47,13 @@ class ListviewExample extends React.Component {
             });
     }
 
+    goToDetail = (item) => {
+        this.props.navigation.navigate("NewsPieceDetail", {newsPiece: item})
+    };
+
     _renderItem = ({item}) => {
         return (
-            <ListItem style={{justifyContent: "space-between"}}>
+            <ListItem style={{justifyContent: "space-between"}} onPress={this.goToDetail}>
                 <Text>{item.title}</Text>
                 <Text note>{item.pubDate}</Text>
             </ListItem>
@@ -78,7 +82,7 @@ class ListviewExample extends React.Component {
                     </Body>
                     <Right />
                 </Header>
-                <FlatList data={this.state.dataSource} keyExtractor={item => item.title} renderItem={this._renderItem}/>
+                <FlatList data={this.state.dataSource} keyExtractor={item => item.title} renderItem={this._renderItem} />
             </Container>
         );
     }
@@ -89,4 +93,4 @@ const mapStateToProps = state => {
     };
 };
 
-export default connect(mapStateToProps)(ListviewExample);
+export default connect(mapStateToProps)(News);

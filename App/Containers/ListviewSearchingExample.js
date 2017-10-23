@@ -4,9 +4,9 @@ import { connect } from 'react-redux'
 // For empty lists
 import AlertMessage from '../Components/AlertMessage'
 // Styles
-import styles from './Styles/ListviewExampleStyles'
+import styles from './Styles/NewsStyles'
 
-class ListviewExample extends React.Component {
+class News extends React.Component {
 
   constructor (props) {
     super(props)
@@ -87,4 +87,4 @@ const mapStateToProps = (state) => {
   }
 }
 
-export default connect(mapStateToProps)(ListviewExample)
+export default connect(mapStateToProps)(News)

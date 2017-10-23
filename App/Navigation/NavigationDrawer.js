@@ -1,17 +1,17 @@
 import React from "react";
 import { DrawerNavigator } from "react-navigation";
-import ListviewExample from "../Containers/ListviewExample";
+import News from "../Containers/News";
 import CardExample from "../Containers/CardExample";
 import DrawerContent from "../Containers/DrawerContent";
 
 import styles from "./Styles/NavigationStyles";
 
 const NavigationDrawer = DrawerNavigator({
-		ListviewExample: { screen: ListviewExample },
-		CardExample: { screen: CardExample },
+        News: { screen: News },
+		//CardExample: { screen: CardExample },
 	},
 	{
-		initialRouteName: "ListviewExample",
+		initialRouteName: "News",
 		contentComponent: props => <DrawerContent {...props} />,
 	}
 );
